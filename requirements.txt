@@ -1,0 +1,9 @@
+Flask==2.3.3
+mysql-connector-python==8.0.30
+bcrypt==4.0.1
+flask-sqlalchemy
+PyMySQL
+Flask-Migrate
+Flask-WTF
+python-telegram-bot
+flask-talisman

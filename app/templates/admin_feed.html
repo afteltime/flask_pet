@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Feed{% endblock %}
+
+{% block content %}
+<div class="admin-feed-container">
+    <h1 class="feed-title">Admin Feed</h1>
+    
+    <div class="posts">
+        {% if posts %}
+            {% for post in posts %}
+                <div class="post-card">
+                    <form action="{{ url_for('admin.edit_post', post_id=post.id) }}" method="POST" class="edit-post-form">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <textarea name="content" rows="3" required>{{ post.content }}</textarea>
+
+                        <div class="post-meta">
+                            <span>by {{ post.author.username }} on {{ post.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</span>
+                        </div>
+
+                        <div class="admin-actions">
+                            <button type="submit" class="save-btn">Save</button>
+                            <button type="button" class="delete-btn" onclick="confirmDelete({{ post.id }})">Delete</button>
+                        </div>
+                    </form>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No posts available.</p>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    function confirmDelete(postId) {
+        if (confirm("Are you sure you want to delete this post?")) {
+            fetch(`/admin/feed/delete/${postId}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-Token": "{{ csrf_token() }}"
+                },
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert("Post deleted successfully!");
+                    location.reload();
+                } else {
+                    alert("Failed to delete the post.");
+                }
+            });
+        }
+    }
+</script>
+{% endblock %}

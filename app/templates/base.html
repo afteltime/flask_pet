@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="light-theme">
+    <header>
+        <!-- Свитчер темы -->
+        <div class="theme-switch-wrapper">
+            <label class="theme-switch" for="checkbox">
+                <input type="checkbox" id="checkbox" />
+                <div class="slider round"></div>
+            </label>
+            <em>Enable Dark Mode!</em>
+        </div>
+    </header>
+
+    <!-- Кнопка logout -->
+    {% if not no_logout %}
+    <button onclick="logout()" class="logout-btn">Logout</button>
+    {% endif %}
+
+    <!-- Flash-сообщения -->
+    <div id="flash-messages" class="flash-container">
+        {% with messages = get_flashed_messages(with_categories=True) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <div class="flash-message {{ category }}">
+                    <span>{{ message }}</span>
+                    <button class="close-btn">&times;</button>
+                </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- CSRF токен -->
+    <div style="display: none;">
+        <form id="csrf-form" method="POST">
+            {{ csrf_token() }}  <!-- Добавление CSRF токена -->
+        </form>
+    </div>
+
+    <!-- Контент страницы -->
+    <div class="content">
+        {% block content %}{% endblock %}
+    </div>
+
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/logout.js') }}"></script>
+    <script>
+        // Закрытие flash-сообщений
+        document.addEventListener('DOMContentLoaded', () => {
+            const closeButtons = document.querySelectorAll('.flash-message .close-btn');
+            closeButtons.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const message = e.target.closest('.flash-message');
+                    message.style.opacity = '0';
+                    setTimeout(() => message.remove(), 300);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

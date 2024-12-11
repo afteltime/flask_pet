@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}User Profile{% endblock %}
+
+{% block content %}
+    <div class="profile-container">
+        <h1>Profile of {{ user.username }}</h1>
+        <form action="{{ url_for('api.user_profile', username=user.username) }}" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="input-group">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" value="{{ user.name }}" required>
+            </div>
+            <div class="input-group">
+                <label for="age">Age:</label>
+                <input type="number" id="age" name="age" value="{{ user.age }}" required>
+            </div>
+            <div class="input-group">
+                <label for="rating">Rating:</label>
+                <input type="number" id="rating" name="rating" value="{{ user.rating }}" required>
+            </div>
+            <button type="submit" class="profile-btn">Update Profile</button>
+        </form>
+    </div>
+{% endblock %}

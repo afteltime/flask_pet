@@ -1,0 +1,476 @@
+/* Основные стили сброса */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Основные стили для body */
+body {
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+    flex-direction: column;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+:root {
+    --background-color: #f5f5f5;
+    --text-color: #333;
+    --container-bg: #ffffff;
+    --input-border: #ddd;
+    --input-bg: #fff;
+    --flash-success: linear-gradient(90deg, #28a745, #218838);
+    --flash-error: linear-gradient(90deg, #dc3545, #c82333);
+    --flash-warning: linear-gradient(90deg, #ffc107, #e0a800);
+    --flash-info: linear-gradient(90deg, #17a2b8, #117a8b);
+}
+
+body.dark-theme {
+    --background-color: #121212;
+    --text-color: #ffffff;
+    --container-bg: #1e1e1e;
+    --input-border: #444;
+    --input-bg: #333;
+}
+
+/* Темы */
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+/* Контейнер */
+.container {
+    background-color: var(--container-bg);
+    border-radius: 15px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    padding: 30px;
+    max-width: 800px;
+    text-align: center;
+    transition: transform 0.3s, background-color 0.3s;
+    color: inherit;
+}
+
+/* Кнопка переключения темы */
+.theme-switch-wrapper {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 10px 15px;
+    background-color: var(--container-bg);
+    border-radius: 30px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.theme-switch {
+    display: inline-block;
+    height: 34px;
+    width: 60px;
+    position: relative;
+}
+
+.theme-switch input {
+    display: none;
+}
+
+.slider {
+    background-color: #ccc;
+    bottom: 0;
+    cursor: pointer;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    border-radius: 34px;
+    transition: background-color 0.4s;
+}
+
+.slider:before {
+    background-color: white;
+    bottom: 4px;
+    content: "";
+    height: 26px;
+    left: 4px;
+    position: absolute;
+    transition: transform 0.4s;
+    width: 26px;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #2196F3;
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+/* Flash-сообщения */
+.flash-container {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    width: 90%;
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.flash-message {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 20px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    transform: translateY(-20px);
+    animation: fadeIn 0.5s forwards, fadeOut 0.5s 4.5s forwards;
+}
+
+.flash-message.success {
+    background: var(--flash-success);
+}
+
+.flash-message.error {
+    background: var(--flash-error);
+}
+
+.flash-message.warning {
+    background: var(--flash-warning);
+    color: #333;
+}
+
+.flash-message.info {
+    background: var(--flash-info);
+}
+
+/* Анимация появления и исчезновения */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+}
+
+/* Остальные элементы формы */
+.input-group input {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+    border: 1px solid var(--input-border);
+    border-radius: 8px;
+    transition: border-color 0.3s;
+    background-color: var(--input-bg);
+    color: inherit;
+}
+
+.input-group input:focus {
+    border-color: #3498db;
+    outline: none;
+}
+
+/* Кнопки */
+button, .submit-btn {
+    padding: 12px 20px;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(to right, #3498db, #2e86c1);
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.3s;
+}
+
+body.dark-theme button, body.dark-theme .submit-btn {
+    background: linear-gradient(to right, #ff9800, #e65100);
+}
+
+button:hover, .submit-btn:hover {
+    transform: translateY(-3px);
+}
+/* Стили для контейнера feed */
+.feed-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Карточка поста */
+.post-card {
+    background-color: var(--container-bg);
+    border-radius: 12px;
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    transition: transform 0.3s, box-shadow 0.3s;
+    color: inherit;
+    overflow: hidden;
+    word-wrap: break-word;
+}
+
+.post-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* Заголовок поста */
+.post-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: var(--text-color);
+    transition: color 0.3s;
+}
+
+/* Текст поста */
+.post-content {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--text-color);
+}
+
+/* Информация о посте (автор, дата) */
+.post-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+    margin-top: 15px;
+    color: #888;
+}
+
+body.dark-theme .post-meta {
+    color: #bbb;
+}
+
+/* Кнопки действий */
+.post-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.post-actions button {
+    padding: 10px 15px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(to right, #3498db, #2e86c1);
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.3s;
+}
+
+body.dark-theme .post-actions button {
+    background: linear-gradient(to right, #ff9800, #e65100);
+}
+
+.post-actions button:hover {
+    transform: translateY(-2px);
+}
+body {
+    font-family: Arial, sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+.admin-feed-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: var(--content-background);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+.feed-title {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.post-card {
+    padding: 10px;
+    background-color: var(--post-background);
+    margin-bottom: 20px;
+    border-radius: 5px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: pre-wrap;
+}
+
+.edit-post-form textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.post-meta {
+    font-size: 12px;
+    color: var(--meta-text-color);
+}
+
+.admin-actions {
+    display: flex;
+    justify-content: space-between;
+}
+
+.save-btn, .delete-btn {
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+.delete-btn {
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
+
+.delete-btn:hover {
+    background-color: #ff1a1a;
+}
+
+:root {
+    --background-color: #f5f5f5;
+    --text-color: #333;
+    --content-background: #ffffff;
+    --post-background: #ffffff;
+    --meta-text-color: #888;
+    --hr-color: #ddd;
+}
+
+/* Dark theme */
+body.dark-mode {
+    --background-color: #121212;
+    --text-color: #ffffff;
+    --content-background: #1e1e1e;
+    --post-background: #252525;
+    --meta-text-color: #bbbbbb;
+    --hr-color: #444;
+}
+.profile-posts-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+h1 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.posts {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.post {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.post:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+}
+
+.post-content {
+    margin-bottom: 10px;
+}
+
+.post p {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.post-meta {
+    font-size: 0.875rem;
+    color: #555;
+    text-align: right;
+}
+.post-card {
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.post-rating {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.rating-score {
+    font-weight: bold;
+}
+
+.rating-btn {
+    padding: 5px 10px;
+    background: #007bff;
+    border: none;
+    color: white;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.rating-btn:hover {
+    background: #0056b3;
+}
+
+.rating-btn.downvote {
+    background: #dc3545;
+}
+
+.rating-btn.downvote:hover {
+    background: #a71d2a;
+}
+

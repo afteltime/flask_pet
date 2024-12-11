@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}User Profile{% endblock %}
+
+{% block content %}
+    <div class="form-container">
+        <h1>Edit User</h1>
+        <form action="{{ url_for('admin.edit_user', id=user.id) }}" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="input-group">
+                <label for="new_id">ID:</label>
+                <input type="number" id="new_id" name="new_id" value="{{ user.id }}" required>
+            </div>
+            <div class="input-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" value="{{ user.username }}" required>
+            </div>
+            <div class="input-group">
+                <label for="password_hash">Password:</label>
+                <input type="text" id="password_hash" name="password_hash" value="{{ user.password_hash }}" required>
+            </div>
+            <div class="input-group">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" value="{{ user.name }}" required>
+            </div>
+            <div class="input-group">
+                <label for="age">Age:</label>
+                <input type="number" id="age" name="age" value="{{ user.age }}" required onkeydown="return event.keyCode !== 38 && event.keyCode !== 40;">
+            </div>
+            <div class="input-group">
+                <label for="rating">Rating:</label>
+                <input type="number" id="rating" name="rating" value="{{ user.rating }}" onkeydown="return event.keyCode !== 38 && event.keyCode !== 40;">
+            </div>
+            <div class="input-group">
+                <label for="role">Role:</label>
+                <select id="role" name="role" required>
+                    <option value="user" {% if user.role == 'user' %}selected{% endif %}>User</option>
+                    <option value="admin" {% if user.role == 'admin' %}selected{% endif %}>Admin</option>
+                </select>
+            </div>
+            <button type="submit" class="submit-btn">Save Changes</button>
+{% endblock %}

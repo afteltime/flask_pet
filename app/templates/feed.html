@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}Feed{% endblock %}
+
+{% block content %}
+<div class="feed-container">
+    <h1 class="feed-title">Feed</h1>
+    <!-- Кнопка для создания нового поста -->
+    <button id="new-post-btn" class="new-post-btn">+</button>
+
+    <!-- Форма для нового поста -->
+    <div id="new-post-form" class="post-form" style="display: none;">
+        <form action="/feed" method="POST" class="post-form-inner">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">  <!-- Добавление CSRF токена -->
+            <textarea name="content" rows="3" placeholder="What's on your mind?" required></textarea>
+            <div class="form-actions">
+                <button type="submit" class="submit-btn">Post</button>
+                <button type="button" id="cancel-btn" class="cancel-btn">Cancel</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Список постов -->
+    <div class="posts">
+        {% if posts %}
+            {% for post in posts %}
+                <div class="post-card">
+                    <div class="post-content">
+                        <p>{{ post.content }}</p>
+                    </div>
+                    <div class="post-meta">
+                        <span>by {{ post.author.username }} on {{ post.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</span>
+                    </div>
+                    <div class="post-rating">
+                        <span class="rating-score">Rating: {{ post.post_rating }}</span>
+                        <button class="rating-btn upvote" data-post-id="{{ post.id }}">⬆</button>
+                        <button class="rating-btn downvote" data-post-id="{{ post.id }}">⬇</button>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No posts yet. Be the first to post something!</p>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    // Показать форму для нового поста
+    document.getElementById('new-post-btn').onclick = function() {
+        document.getElementById('new-post-form').style.display = 'block';
+    };
+    // Скрыть форму для нового поста
+    document.getElementById('cancel-btn').onclick = function() {
+        document.getElementById('new-post-form').style.display = 'none';
+    };
+
+    // Логика обработки рейтинга (пример использования fetch API)
+    document.querySelectorAll('.rating-btn').forEach(button => {
+        button.onclick = function() {
+            const postId = this.getAttribute('data-post-id');
+            const action = this.classList.contains('upvote') ? 'upvote' : 'downvote';
+            const csrfToken = '{{ csrf_token() }}';  // Исправление добавления CSRF токена
+
+            fetch(`/rate-post/${postId}/${action}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrfToken,  // Добавление CSRF токена
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    const ratingScore = this.parentNode.querySelector('.rating-score');
+                    ratingScore.textContent = `Rating: ${data.rating}`;
+                } else {
+                    alert('Something went wrong!');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        };
+    });
+</script>
+{% endblock %}

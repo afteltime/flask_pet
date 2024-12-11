@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}{{ user.username }}'s Posts{% endblock %}
+
+{% block content %}
+    <div class="profile-posts-container">
+        <h1>{{ user.username }}'s Posts</h1>
+        <div class="posts">
+            {% for post in posts %}
+                <div class="post">
+                    <div class="post-content">
+                        <p>{{ post.content }}</p>
+                    </div>
+                    <div class="post-meta">
+                        <span>Posted on {{ post.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</span>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
