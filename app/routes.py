@@ -5,9 +5,11 @@ from .regusers import api_routes as regusers_blueprint
 from flask_wtf.csrf import CSRFProtect, generate_csrf
 
 
+
 api_routes = Blueprint('api', __name__)
 
 api_routes.register_blueprint(regusers_blueprint)
+
 
 
 @api_routes.route('/')

@@ -7,3 +7,4 @@ Flask-Migrate
 Flask-WTF
 python-telegram-bot
 flask-talisman
+python-dotenv

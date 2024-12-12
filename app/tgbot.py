@@ -2,8 +2,12 @@ import requests
 from telegram import Update, ReplyKeyboardMarkup, KeyboardButton
 from telegram.constants import ParseMode
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes, ConversationHandler
+from dotenv import load_dotenv
+import os
 
-API_TOKEN = "your telegram bot token"
+load_dotenv(dotenv_path='tgapi.env')
+
+API_TOKEN = os.getenv('API_TOKEN_FOR_TG')
 FLASK_API_URL = 'http://localhost:5000/api/feed'
 FLASK_API_TOKEN_URL = 'http://localhost:5000/api/token'
 

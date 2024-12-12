@@ -53,12 +53,15 @@ class UserRegistration:
             username = request.form.get('username')
             password = request.form.get('password')
             password_hash = User.get_password(username)
+            stay_logged_in = request.form.get('stay_logged_in')
 
             if password_hash and bcrypt.checkpw(password.encode('utf-8'), password_hash.encode('utf-8')):
                 session['user'] = username
                 user = User.query.filter_by(username=username).first()
                 session['user_id'] = user.id
                 session['role']= user.role
+                if stay_logged_in:
+                    session.permanent = True
                 flash('Login successful!', 'success')
                 return redirect(url_for('admin.admin_panel' if user.role == 'admin' else 'api.user_profile', username=username))
             else:
