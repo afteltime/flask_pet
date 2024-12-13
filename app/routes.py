@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify, render_template, flash, redirect, url_for, session, make_response
 from .decorators import login_required
-from .models import User, db, Post
+from .models import User, db, Post, Vote
 from .regusers import api_routes as regusers_blueprint
 from flask_wtf.csrf import CSRFProtect, generate_csrf
 
@@ -175,18 +175,40 @@ def get_csrf_token():
 
 
 @api_routes.route('/rate-post/<int:post_id>/<string:action>/', methods=['POST', 'PUT'])
+@login_required
 def rate_post(post_id, action):
     post = Post.query.get_or_404(post_id)
+    user_id = session.get('user_id')
+    if not user_id:
+        return jsonify({'error': 'User not looged in'}), 401
+
+    existing_vote = Vote.query.filter_by(user_id=user_id, post_id=post.id).first()
+
     try:
-        if action == "upvote":
-            post.post_rating += 1
-        elif action == "downvote":
-            post.post_rating -= 1
+        if existing_vote:
+            if existing_vote.vote_type == action:
+                #cancel vote
+                db.session.delete(existing_vote)
+                post.post_rating += 1 if action == 'downvote' else -1
+            else:
+                #change vote
+                existing_vote.vote_type = action
+                post.post_rating += 2 if action == 'upvote' else -2
         else:
-            return jsonify({'error': 'Invalid action'}), 400
+            #new vote
+            new_vote = Vote(user_id=user_id, post_id=post_id, vote_type=action)
+            db.session.add(new_vote)
+            post.post_rating += 1 if action == 'upvote' else -1
+
 
         db.session.commit()
         return jsonify({'message': 'Post rating updated successfully!', 'rating': post.post_rating}), 200
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
+
+
+
+
+
+

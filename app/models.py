@@ -61,3 +61,13 @@ class Post(db.Model):
 
     def __repr__(self):
         return f'<Post {self.content}>'
+
+
+
+class Vote(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
+    vote_type = db.Column(db.String(10), nullable=False)
+    user = db.relationship('User', backref=db.backref('votes', lazy=True))
+    post = db.relationship('Post', backref=db.backref('votes', lazy=True))

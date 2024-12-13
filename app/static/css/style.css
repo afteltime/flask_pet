@@ -319,3 +319,26 @@ body.dark-theme .theme-toggler {
         padding: 5px 10px;
     }
 }
+
+.rating-btn.voted {
+    color: #FFD700;.rating-btn {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 1.5em;
+    transition: color 0.3s;
+}
+
+.rating-btn.upvote:hover {
+    color: green;
+}
+
+.rating-btn.downvote:hover {
+    color: red;
+}
+
+.rating-btn.voted {
+    color: gold;
+}
+
+}
