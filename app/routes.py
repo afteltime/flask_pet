@@ -3,6 +3,7 @@ from .decorators import login_required
 from .models import User, db, Post, Vote
 from .regusers import api_routes as regusers_blueprint
 from flask_wtf.csrf import CSRFProtect, generate_csrf
+from .positive_optimistic_blocker import generate_action_token
 
 
 
@@ -174,17 +175,25 @@ def get_csrf_token():
 
 
 
-@api_routes.route('/rate-post/<int:post_id>/<string:action>/', methods=['POST', 'PUT'])
+@api_routes.route('/rate-post/<int:post_id>/<string:action>/', methods=['POST'])
 @login_required
 def rate_post(post_id, action):
     post = Post.query.get_or_404(post_id)
     user_id = session.get('user_id')
+
     if not user_id:
         return jsonify({'error': 'User not looged in'}), 401
 
-    existing_vote = Vote.query.filter_by(user_id=user_id, post_id=post.id).first()
+    #created token for blocker
+    action_token = generate_action_token(user_id, post_id, action)
+    existing_token = Vote.query.filter_by(action_token=action_token).first()
+
+    if existing_token:
+        return jsonify({'error': 'This action is already in progress'}), 409
 
     try:
+        existing_vote = Vote.query.filter_by(user_id=user_id, post_id=post.id).first()
+
         if existing_vote:
             if existing_vote.vote_type == action:
                 #cancel vote
@@ -196,7 +205,7 @@ def rate_post(post_id, action):
                 post.post_rating += 2 if action == 'upvote' else -2
         else:
             #new vote
-            new_vote = Vote(user_id=user_id, post_id=post_id, vote_type=action)
+            new_vote = Vote(user_id=user_id, post_id=post_id, vote_type=action, action_token=action_token)
             db.session.add(new_vote)
             post.post_rating += 1 if action == 'upvote' else -1
 

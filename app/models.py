@@ -1,4 +1,5 @@
 from datetime import datetime
+from enum import unique
 
 from . import db
 
@@ -69,5 +70,6 @@ class Vote(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
     vote_type = db.Column(db.String(10), nullable=False)
+    action_token = db.Column(db.String(64), unique=True, nullable=False)
     user = db.relationship('User', backref=db.backref('votes', lazy=True))
     post = db.relationship('Post', backref=db.backref('votes', lazy=True))

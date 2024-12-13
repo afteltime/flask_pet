@@ -8,3 +8,5 @@ Flask-WTF
 python-telegram-bot
 flask-talisman
 python-dotenv
+redis
+rq
