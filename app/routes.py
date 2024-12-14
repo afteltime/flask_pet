@@ -158,7 +158,8 @@ def get_feed():
             return jsonify({'error': str(e)}), 500
 
     posts = Post.query.order_by(Post.timestamp.desc()).all()
-    response = [{'author': post.author.username,
+    response = [{'id': post.id,
+                 'author': post.author.username,
                  'timestamp': post.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
                  'content': post.content,
                  'rating':post.post_rating} for post in posts]

@@ -1,5 +1,5 @@
 from flask import Blueprint, request, render_template, redirect, url_for, session, flash
-from .models import User, db, Post
+from .models import User, db, Post, Vote
 from .decorators import login_required, role_required
 
 admin_routes = Blueprint('admin', __name__)
@@ -94,9 +94,15 @@ def edit_post(post_id):
 def delete_post(post_id):
     post = Post.query.get(post_id)
     if post:
-        db.session.delete(post)
-        db.session.commit()
-        flash('Post deleted successfully!', 'success')
+        try:
+            Vote.query.filter_by(post_id=post.id).delete()
+            db.session.delete(post)
+            db.session.commit()
+            flash('Post deleted successfully!', 'success')
+        except Exception as e:
+            db.session.rollback()
+            flash(f'An error occured: {str(e)}', 'error')
     else:
         flash('Post not found', 'error')
+
     return redirect(url_for('admin.red_posts'))

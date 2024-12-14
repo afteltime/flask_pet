@@ -1,14 +1,20 @@
 import redis
 from rq import Worker, Queue
-from redis import Connection
 
 listen = ['default']
-redis_url = 'ur path to redis'
+redis_url = 'redis://localhost:6379'
 
 
-conn = redis.from_url(redis_url)
+conn = redis.Redis.from_url(redis_url)
+
+
+def run_worker():
+
+    queues = [Queue(name, connection=conn) for name in listen]
+
+    worker = Worker(queues, connection=conn)
+    worker.work()
+
 
 if __name__ == '__main__':
-    with Connection(conn):
-        worker = Worker(map(Queue, listen))
-        worker.work()
+    run_worker()

@@ -1,18 +1,54 @@
+from http.client import responses
 import requests
 from telegram import Update, ReplyKeyboardMarkup, KeyboardButton
 from telegram.constants import ParseMode
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes, ConversationHandler
 from dotenv import load_dotenv
 import os
+import redis
+from app.worker import redis_url
 
+
+redis_conn = redis.from_url(redis_url)
 load_dotenv(dotenv_path='tgapi.env')
-
 API_TOKEN = os.getenv('API_TOKEN_FOR_TG')
 FLASK_API_URL = 'http://localhost:5000/api/feed'
 FLASK_API_TOKEN_URL = 'http://localhost:5000/api/token'
 
-
 ASK_NAME, POST_TEXT = range(2)
+
+def load_posts_to_redis():
+    response = requests.get(FLASK_API_URL)
+    posts = response.json()
+
+    for post in posts:
+        post_key = f"post:{post['id']}"
+        if not redis_conn.exists(post_key):
+            redis_conn.hmset(post_key, {
+                'author': post['author'],
+                'timestamp': post['timestamp'],
+                'content': post['content'],
+                'rating': post['rating']
+            })
+
+load_posts_to_redis()
+
+
+
+def get_posts_from_redis():
+    posts = []
+    keys = redis_conn.keys('post:*')
+    for key in keys:
+        post_data = redis_conn.hgetall(key)
+        posts.append({
+            'author': post_data[b'author'].decode('utf-8'),
+            'timestamp': post_data[b'timestamp'].decode('utf-8'),
+            'content': post_data[b'content'].decode('utf-8'),
+            'rating': int(post_data[b'rating'])
+        })
+    posts.sort(key=lambda post: post['timestamp'], reverse=True)
+    return posts
+
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     keyboard = [
@@ -65,7 +101,7 @@ async def send_post(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     except requests.exceptions.RequestException as e:
         await update.message.reply_text(f"Ошибка при создании поста: {str(e)}")
 
-    return ConversationHandler.END
+    return ConversationHandler.END, load_posts_to_redis()
 
 async def send_status(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     try:
@@ -96,13 +132,7 @@ async def send_status(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
 
 async def send_feed(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     try:
-        response = requests.get(FLASK_API_URL)
-
-        if response.status_code != 200:
-            await update.message.reply_text("Не удалось получить посты. Попробуйте позже.")
-            return
-
-        posts = response.json()
+        posts = get_posts_from_redis()
 
         if not posts:
             await update.message.reply_text("Нет доступных постов.")
@@ -114,7 +144,6 @@ async def send_feed(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
                 f"🕒 {post['timestamp']}\n\n"
                 f"{post['content']}\n"
                 f"⭐{post['rating']}",
-
                 parse_mode=ParseMode.MARKDOWN
             )
     except Exception as e:
