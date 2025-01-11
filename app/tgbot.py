@@ -1,4 +1,3 @@
-from http.client import responses
 import requests
 from telegram import Update, ReplyKeyboardMarkup, KeyboardButton
 from telegram.constants import ParseMode
@@ -10,7 +9,7 @@ from app.worker import redis_url
 
 
 redis_conn = redis.from_url(redis_url)
-load_dotenv(dotenv_path='tgapi.env')
+load_dotenv(dotenv_path='../routes_passes.env')
 API_TOKEN = os.getenv('API_TOKEN_FOR_TG')
 FLASK_API_URL = 'http://localhost:5000/api/feed'
 FLASK_API_TOKEN_URL = 'http://localhost:5000/api/token'

@@ -27,9 +27,11 @@ def create_app():
 
     from .routes import api_routes
     from .adminpanel import admin_routes
+    from .messages import messages_bp
 
     app.register_blueprint(admin_routes, url_prefix='/')
     app.register_blueprint(api_routes, url_prefix='/')
+    app.register_blueprint(messages_bp, url_prefix='/')
 
     with app.app_context():
         db.create_all()

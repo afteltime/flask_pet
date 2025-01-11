@@ -66,6 +66,7 @@ class Post(db.Model):
 
 
 class Vote(db.Model):
+    __tablename__ = 'vote'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
@@ -73,3 +74,43 @@ class Vote(db.Model):
     action_token = db.Column(db.String(64), unique=True, nullable=False)
     user = db.relationship('User', backref=db.backref('votes', lazy=True))
     post = db.relationship('Post', backref=db.backref('votes', lazy=True))
+
+
+
+class Message(db.Model):
+    __tablename__ = "messages"
+    id = db.Column(db.Integer, primary_key=True)
+    content = db.Column(db.Text, nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    sender_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    receiver_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    channel_id = db.Column(db.Integer, db.ForeignKey('channels.id'), nullable=True)
+
+    sender = db.relationship('User', foreign_keys=[sender_id], backref='sent_messages', lazy=True)
+    receiver = db.relationship('User', foreign_keys=[receiver_id], backref='received_messages', lazy=True)
+    channel = db.relationship('Channel', backref='messages', lazy=True)
+
+    def __repr__(self):
+        return f'<Message {self.content}>'
+
+
+
+class Channel(db.Model):
+    __tablename__ = "channels"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(120), unique=True, nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    owner_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+
+    owner = db.relationship('User', backref='owned_channels', lazy=True)
+    members = db.relationship('User', secondary='channel_members', backref='channels', lazy=True)
+
+    def __repr__(self):
+        return f'<Channel {self.name}>'
+
+
+    channel_members = db.Table('channel_members',
+        db.Column('channel_id', db.Integer, db.ForeignKey('channels.id'), primary_key=True),
+        db.Column('user_id', db.Integer, db.ForeignKey('users.id'), primary_key=True)
+        )
+

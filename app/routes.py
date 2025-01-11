@@ -6,7 +6,6 @@ from flask_wtf.csrf import CSRFProtect, generate_csrf
 from .positive_optimistic_blocker import generate_action_token
 
 
-
 api_routes = Blueprint('api', __name__)
 
 api_routes.register_blueprint(regusers_blueprint)
@@ -216,9 +215,3 @@ def rate_post(post_id, action):
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
-
-
-
-
-
-

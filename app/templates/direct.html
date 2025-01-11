@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}Direct Messages and Subscriptions{% endblock %}
+
+{% block content %}
+    <div class="messaging-container">
+        <div class="sidebar">
+            <h2>Chats</h2>
+            <ul class="chat-list">
+                {% for chat in user.chats %}
+                    <li>
+                        <a href="{{ url_for('messages_bp.view_chat', chat_id=chat.id) }}">
+                            <div class="chat-item">
+                                <img src="{{ chat.avatar }}" alt="Avatar" class="avatar">
+                                <div class="chat-info">
+                                    <h3>{{ chat.name }}</h3>
+                                    <p>{{ chat.last_message }}</p>
+                                </div>
+                                <span class="chat-time">{{ chat.last_message_time }}</span>
+                            </div>
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="content">
+            <div class="messages">
+                {% if selected_chat %}
+                    <h2>Chat with {{ selected_chat.name }}</h2>
+                    <div class="message-list">
+                        {% for message in selected_chat.messages %}
+                            <div class="message {{ 'own-message' if message.sender == user.username else 'other-message' }}">
+                                <p>{{ message.content }}</p>
+                                <span class="message-time">{{ message.time }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <form action="{{ url_for('messages_bp.send_message') }}" method="POST">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <div class="input-group">
+                            <input type="text" name="message" placeholder="Type your message here..." required>
+                            <button type="submit" class="send-btn">Send</button>
+                        </div>
+                    </form>
+                {% else %}
+                    <h2>Select a chat to start messaging</h2>
+                {% endif %}
+            </div>
+        </div>
+        <div class="sidebar">
+            <h2>Groups</h2>
+            <button onclick="document.getElementById('createChannelModal').style.display='block'" class="create-channel-btn">Create Channel</button>
+            <ul class="group-list">
+                {% for group in user.groups %}
+                    <li>
+                        <a href="{{ url_for('messages_bp.view_channel', channel_id=group.id) }}">
+                            <div class="group-item">
+                                <img src="{{ group.avatar }}" alt="Group Avatar" class="avatar">
+                                <div class="group-info">
+                                    <h3>{{ group.name }}</h3>
+                                    <p>{{ group.description }}</p>
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+            <h2>Search Channels</h2>
+            <form action="{{ url_for('messages_bp.search_channels') }}" method="GET">
+                <div class="input-group">
+                    <input type="text" name="search_query" placeholder="Search channels..." required>
+                    <button type="submit" class="search-btn">Search</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for creating a new channel -->
+    <div id="createChannelModal" class="modal">
+        <div class="modal-content">
+            <span onclick="document.getElementById('createChannelModal').style.display='none'" class="close">&times;</span>
+            <h2>Create a New Channel</h2>
+            <form action="{{ url_for('messages_bp.create_channel') }}" method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="input-group">
+                    <label for="channel_name">Channel Name:</label>
+                    <input type="text" id="channel_name" name="name" required>
+                </div>
+                <div class="input-group">
+                    <label for="channel_description">Description:</label>
+                    <textarea id="channel_description" name="description"></textarea>
+                </div>
+                <button type="submit" class="create-channel-submit-btn">Create</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}
