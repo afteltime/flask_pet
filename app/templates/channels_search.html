@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Channel Search Results{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Search Channels</h2>
+    <form action="{{ url_for('messages_bp.search_channels') }}" method="GET">
+        <div class="input-group">
+            <input type="text" name="search_query" placeholder="Search channels..." required>
+            <button type="submit" class="search-btn">Search</button>
+        </div>
+    </form>
+    
+    <hr>
+    
+    <h3>Channel Search Results</h3>
+    <ul class="channel-list">
+        {% if channels %}
+            {% for channel in channels %}
+                <li>
+                    <a href="{{ url_for('messages_bp.view_channel', channel_id=channel.id) }}">
+                        <div class="channel-item">
+                            <div class="channel-info">
+                                <h4>{{ channel.name }}</h4>
+                                <p>{{ channel.description }}</p>
+                            </div>
+                        </div>
+                    </a>
+                </li>
+            {% endfor %}
+        {% else %}
+            <p>No channels found matching your search.</p>
+        {% endif %}
+    </ul>
+</div>
+{% endblock %}

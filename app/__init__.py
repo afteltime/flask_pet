@@ -6,10 +6,13 @@ from flask_talisman import Talisman
 from datetime import timedelta
 from dotenv import load_dotenv
 import os
+from app.logging import setup_loggers
+
 
 db = SQLAlchemy()
 migrate = Migrate()
 csrf = CSRFProtect()
+
 
 def create_app():
     app = Flask(__name__)
@@ -24,14 +27,17 @@ def create_app():
     csrf.init_app(app)
     #Talisman(app)  #Flask https sert (ВКЛЮЧИТЬ НА ПРОДЕ, ПОФИКСИТЬ ЕГО ВСТАВКУ В csrf токен на html доках )
 
+    setup_loggers(app)
 
     from .routes import api_routes
     from .adminpanel import admin_routes
     from .messages import messages_bp
+    from .honeypot import honey_p
 
     app.register_blueprint(admin_routes, url_prefix='/')
     app.register_blueprint(api_routes, url_prefix='/')
     app.register_blueprint(messages_bp, url_prefix='/')
+    app.register_blueprint(honey_p, url_prefix='/')
 
     with app.app_context():
         db.create_all()

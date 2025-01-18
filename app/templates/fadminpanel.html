@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Admin Panel Login</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
     <div class="login-container">
-        <h1>Login</h1>
-        <form action="/api/login" method="POST">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">  <!-- Добавление CSRF токена -->
+        <h1>Admin Panel</h1>
+        <form action="/adminpanel" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <div class="form-group">
                 <label for="username">Username</label>
                 <input type="text" name="username" id="username" required>
@@ -23,9 +23,11 @@
                 <input type="checkbox" id="stay_logged_in" name="stay_logged_in">
                 <label for="stay_logged_in">Stay Logged In</label>
             </div>
-            <input type="text" name="mail" class="mail">
             <button type="submit">Login</button>
         </form>
+        {% if error %}
+        <p style="color: red;">{{ error }}</p>
+        {% endif %}
     </div>
 </body>
 </html>

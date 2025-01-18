@@ -4,6 +4,7 @@ from .decorators import login_required, role_required
 
 admin_routes = Blueprint('admin', __name__)
 
+
 @admin_routes.route('/admin')
 @role_required('admin')
 def admin_panel():

@@ -37,17 +37,27 @@
         {% endwith %}
     </div>
 
-    <!-- CSRF токен -->
-    <div style="display: none;">
-        <form id="csrf-form" method="POST">
-            {{ csrf_token() }}  <!-- Добавление CSRF токена -->
-        </form>
-    </div>
-
     <!-- Контент страницы -->
     <div class="content">
         {% block content %}{% endblock %}
     </div>
+
+    <!-- Включение CSRF-токена во все формы -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var csrfToken = '{{ csrf_token() }}';
+            var forms = document.querySelectorAll('form');
+            forms.forEach(function(form) {
+                if (!form.querySelector('input[name="csrf_token"]')) {
+                    var csrfInput = document.createElement('input');
+                    csrfInput.type = 'hidden';
+                    csrfInput.name = 'csrf_token';
+                    csrfInput.value = csrfToken;
+                    form.appendChild(csrfInput);
+                }
+            });
+        });
+    </script>
 
     <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
     <script src="{{ url_for('static', filename='js/logout.js') }}"></script>

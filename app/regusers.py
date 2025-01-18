@@ -30,6 +30,13 @@ class UserRegistration:
         password = request.form.get('password')
         name = request.form.get('name')
         age = request.form.get('age')
+        mail = request.form.get('mail')
+
+        # bot protect (mail is hidden)
+        if mail:
+            return jsonify({"error": "Invalid submission"}), 400
+
+
 
         is_valid, error_message = UserRegistration.validate_input(username, password)
         if not is_valid:
@@ -54,6 +61,13 @@ class UserRegistration:
             password = request.form.get('password')
             password_hash = User.get_password(username)
             stay_logged_in = request.form.get('stay_logged_in')
+            mail = request.form.get('mail')
+
+            #bot protect (mail is hidden)
+            if mail:
+               flash('invalid username or password', 'error')
+               return jsonify({"error": "Invalid submission"}), 400
+
 
             if password_hash and bcrypt.checkpw(password.encode('utf-8'), password_hash.encode('utf-8')):
                 session['user'] = username

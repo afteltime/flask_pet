@@ -21,6 +21,20 @@
                         </a>
                     </li>
                 {% endfor %}
+                <!-- Отображение всех каналов -->
+                {% for channel in user.channels %}
+                    <li>
+                        <a href="{{ url_for('messages_bp.view_channel', channel_id=channel.id) }}">
+                            <div class="chat-item">
+                                <img src="{{ channel.avatar }}" alt="Avatar" class="avatar">
+                                <div class="chat-info">
+                                    <h3>{{ channel.name }}</h3>
+                                    <p>{{ channel.description }}</p>
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+                {% endfor %}
             </ul>
         </div>
         <div class="content">

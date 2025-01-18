@@ -42,18 +42,41 @@ def send_message():
 @messages_bp.route('/messages/create', methods=['POST'])
 @login_required
 def create_channel():
-    data = request.get_json()
-    name = data.get('name')
-    description = data.get('description')
+    name = request.form.get('name')
+    description = request.form.get('description')
     user_id = session.get('user_id')
 
     if not name:
         return jsonify({'error': 'Channel name is required'}), 400
 
     channel = Channel(name=name, description=description, owner_id=user_id)
+    channel.members.append(User.query.get(user_id))
     db.session.add(channel)
     db.session.commit()
     return jsonify({'message': 'Channel created successfully!'}), 201
+
+@messages_bp.route('/channels/<int:channel_id>/edit', methods=['POST'])
+@login_required
+def edit_channel(channel_id):
+    channel = Channel.query.get(channel_id)
+    user_id = session.get('user_id')
+
+    if channel.owner_id != user_id:
+        return jsonify({'error':'Only owner can edit channel'}), 403
+
+    name = request.form.get('name')
+    description = request.form.get('description')
+
+    if name:
+        channel.name = name
+    if description:
+        channel.description = description
+
+    db.session.commit()
+    return jsonify({'message':'Channel updated'}), 200
+
+
+
 
 
 @messages_bp.route('/messages/search', methods=['GET'])
@@ -61,4 +84,4 @@ def create_channel():
 def search_channels():
     search_query = request.args.get('search_query')
     channels = Channel.query.filter(Channel.name.ilike(f'%{search_query}%')).all()
-    return render_template('channels/channel_search_results.html', channels=channels)
+    return render_template('channels_search.html', channels=channels)
